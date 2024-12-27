@@ -33,17 +33,15 @@ router.post('/signup', async (req, res) => {
             firstName: userBody.firstName,
             lastName: userBody.lastName
         })
-        const userID = newUser._id 
-        const Token = jwt.sign({userID}, jwtSecret)
+        const userID = newUser._id                                            //const Token = jwt.sign({userID}, jwtSecret)
         // generating random balance
         await Account.create({
             userID,
             balance: 1 + Math.random() * 10000
         })
 
-        return res.status(200).json({
-            message: "User created successfully",
-            token: Token
+        return res.status(200).json({                                                               // token: Token
+            message: "User created successfully"
         })
     }
     else {
@@ -61,28 +59,28 @@ const signInSchema = zod.object({
 
 router.post('/signin', async (req, res) => {
     const userData = signInSchema.safeParse(req.body);
-    if(userData.success){
+    if (userData.success) {
         const user = await User.findOne({
             username: userData.username,
             password: userData.password
         })
-        if(!user){
+        if (!user) {
             return res.status(411).json({
                 message: "Error while logging in"
             })
         }
-    
+
         const Token = jwt.sign({
-           userID: user._id
+            userID: user._id
         }, jwtSecret)
-    
+
         return res.json({
             token: Token
         })
     }
     return res.status(411).json({
-        message : "Incorrect inputs"
-    }) 
+        message: "Incorrect inputs"
+    })
 })
 
 const updateUserSchema = zod.object({
@@ -91,33 +89,33 @@ const updateUserSchema = zod.object({
     lastName: zod.string().optional()
 })
 
-router.put('/', authMiddleware , async (req, res)=>{
+router.put('/', authMiddleware, async (req, res) => {
     const userData = updateUserSchema.safeParse(req.body);
-    if(!userData.success){
+    if (!userData.success) {
         return res.status(411).json({
             message: "Error while updating information"
         })
     }
-    await User.updateOne({_id: req.userID}, req.body)
+    await User.updateOne({ _id: req.userID }, req.body)
     return res.status(200).json({
         message: "Updated successfully"
     })
 })
 
-router.get('/bulk', authMiddleware, async (req, res)=>{
+router.get('/bulk', authMiddleware, async (req, res) => {
     const filter = req.query.filter || "";
     const allUsers = await User.find({
-        $or:[{
-            firstName:{
-                "$regex":filter
+        $or: [{
+            firstName: {
+                "$regex": filter
             },
-            lastName:{
-                "$regex":filter
+            lastName: {
+                "$regex": filter
             }
         }]
-    }) 
+    })
     res.status(200).json({
-        users: allUsers.map(user=>({
+        users: allUsers.map(user => ({
             username: user.username,
             firstName: user.firstName,
             lastName: user.lastName,
