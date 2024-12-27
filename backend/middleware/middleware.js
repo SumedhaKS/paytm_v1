@@ -1,6 +1,6 @@
 const { jwt, jwtSecret } = require('../config')
 
-export function authMiddleware(req, res, next){
+function authMiddleware(req, res, next){
     const authHeader = req.headers.authorization;
 
     if(!authHeader || !authHeader.startsWith('Bearer')){
