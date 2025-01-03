@@ -63,8 +63,8 @@ router.post('/signin', async (req, res) => {
     const userData = signInSchema.safeParse(req.body);
     if (userData.success) {
         const user = await User.findOne({
-            username: userData.username,
-            password: userData.password
+            username: req.body.username,
+            password: req.body.password
         })
         if (!user) {
             return res.status(411).json({
