@@ -1,1 +1,1 @@
-Learning transactions via this project.
+Learning transactions in mongoDB, routing in node.js via this project.
